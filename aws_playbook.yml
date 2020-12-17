@@ -94,7 +94,7 @@
   tasks:
     - name: ensure all packages is present
       #apt: pkg=tomcat9 state=present update_cache=yes
-      apt: pkg={{ item }} state=latest update_cache=yes
+      apt: pkg={{ item }} state=present update_cache=yes
       with_items:
         - tomcat9
         - python-pip
