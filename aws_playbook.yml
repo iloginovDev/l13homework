@@ -1,0 +1,84 @@
+---
+- name: provisioning AWS instances
+  hosts: localhost
+
+  vars:
+    aws_region: us-east-2
+    aws_key_name: my-key-test
+    aws_security_group: launch-wizard-1
+#    aws_key_file: /root/.ssh/my-key.pem
+    aws_image: ami-0a91cd140a1fc148a
+
+  tasks:
+
+    - name: create 2 AWS ec2 instance
+      ec2:
+        key_name: "{{ aws_key_name }}"
+#        security_group: "{{ aws_security_group }}"
+        group_id: "sg-0cbcf09c7da4ea5f3"
+        instance_type: "t2.micro"
+        ec2_region: "{{ aws_region }}"
+        image: "{{ aws_image }}"
+        wait: yes
+        count: 2
+        vpc_subnet_id: subnet-19f3e463
+        assign_public_ip: yes
+      register: myvpc
+
+    - name: Add new instance to host group build
+      add_host:
+        hostname: "{{ myvpc.instances[0].public_ip }}"
+        groupname: build
+
+    - name: Add new instance to host group web
+      add_host:
+        hostname: "{{ myvpc.instances[1].public_ip}}"
+        groupname: web
+
+- name: build war
+  hosts: build
+  become: yes
+  remote_user: ubuntu
+  vars:
+    ansible_ssh_private_key_file: /root/.ssh/my-key.pem
+  tasks:
+
+    - name: enshure all packages are installed
+      apt: pkg={{ item }} state=latest update_cache=yes
+      with_items:
+        - default-jdk
+        - maven
+        - git
+
+    - name: enshure repo cloned
+      git: repo=https://github.com/boxfuse/boxfuse-sample-java-war-hello.git dest=/home/boxfuse-sample-java-war-hello
+      tags: deploy
+
+    - name: enshure package was built
+      command: mvn package -f /home/boxfuse-sample-java-war-hello
+
+    - name: put war to S3
+      amazon.aws.aws_s3:
+        bucket: testbucket.test5.com
+        object: /my/hello-1.0.war
+        src: /home/boxfuse-sample-java-war-hello/target/hello-1.0.war
+        mode: put
+
+
+- name: deploy to web instance
+  hosts: web
+  become: yes
+  remote_user: ubuntu
+  vars:
+    ansible_ssh_private_key_file: /root/.ssh/my-key.pem
+
+  tasks:
+    - name: ensure tomcat9 package is present
+      apt: pkg=tomcat9 state=present update_cache=yes
+
+    - name: Get a specific version of an object.
+      amazon.aws.aws_s3:
+        bucket: testbucket.test5.com
+        object: /my/hello-1.0.war
+        dest: /var/lib/tomcat8/webapps/hello-1.0.war
+        mode: get
