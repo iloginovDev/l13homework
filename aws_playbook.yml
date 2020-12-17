@@ -63,7 +63,7 @@
         - default-jdk
         - maven
         - git
-        - python.pip
+        - python-pip
 
     - name: Enshure boto3 is installed
       command: pip install boto3
@@ -97,7 +97,7 @@
       apt: pkg={{ item }} state=latest update_cache=yes
       with_items:
         - tomcat9
-        - python.pip
+        - python-pip
 
     - name: Enshure boto3 is installed
       command: pip install boto3
