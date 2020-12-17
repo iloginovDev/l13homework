@@ -15,7 +15,7 @@
         name: "{{ aws_key_name }}"
         region: "{{ aws_region }}"
       register: ec2_key_result
-      
+
     - name: Save private key
       copy: content="{{ ec2_key_result.key.private_key }}" dest="./aws_key.pem" mode=0600
 
@@ -46,6 +46,7 @@
 - name: build war
   hosts: build
   become: yes
+  connection: ssh
   remote_user: ubuntu
   vars:
     ansible_ssh_private_key_file: ./aws_key.pem
@@ -76,6 +77,7 @@
 - name: deploy to web instance
   hosts: web
   become: yes
+  connection: ssh
   remote_user: ubuntu
   vars:
     ansible_ssh_private_key_file: ./aws_key.pem
@@ -84,7 +86,7 @@
     - name: ensure tomcat9 package is present
       apt: pkg=tomcat9 state=present update_cache=yes
 
-    - name: Get a specific version of an object.
+    - name: Get an object.
       amazon.aws.aws_s3:
         bucket: testbucket.test5.com
         object: /my/hello-1.0.war
