@@ -89,8 +89,8 @@
 
     - name: put war to S3
       amazon.aws.aws_s3:
-        aws_access_key: {{aws_key_id}}
-        aws_secret_key: {{aws_secret_key}}
+        aws_access_key: "{{ aws_key_id }}"
+        aws_secret_key: "{{ aws_secret_key }}"
         bucket: testbucket.test5.com
         object: /my/hello-1.0.war
         src: /home/boxfuse-sample-java-war-hello/target/hello-1.0.war
@@ -130,8 +130,8 @@
 
     - name: Get an object.
       amazon.aws.aws_s3:
-        aws_access_key: {{aws_key_id}}
-        aws_secret_key: {{aws_secret_key}}
+        aws_access_key: "{{ aws_key_id }}"
+        aws_secret_key: "{{ aws_secret_key }}"
         bucket: testbucket.test5.com
         object: /my/hello-1.0.war
         dest: /var/lib/tomcat8/webapps/hello-1.0.war
