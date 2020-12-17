@@ -65,8 +65,9 @@
         - git
         - python3-pip
 
-    - name: Enshure boto3 is installed
-      command: pip install boto3
+    - name: Install boto3 python package
+      pip:
+        name: boto3
 
     - name: enshure repo cloned
       git: repo=https://github.com/boxfuse/boxfuse-sample-java-war-hello.git dest=/home/boxfuse-sample-java-war-hello
@@ -99,8 +100,9 @@
         - tomcat9
         - python3-pip
 
-    - name: Enshure boto3 is installed
-      command: pip install boto3
+    - name: Install boto3 python package
+      pip:
+        name: boto3
 
     - name: Get an object.
       amazon.aws.aws_s3:
