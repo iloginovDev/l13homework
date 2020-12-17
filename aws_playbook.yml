@@ -46,7 +46,7 @@
     - name: Adding delay for system to come up
       wait_for:
         timeout: 30
-        delegate_to: localhost
+      delegate_to: localhost
 
 - name: build war
   hosts: build
