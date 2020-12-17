@@ -43,6 +43,11 @@
         hostname: "{{ myvpc.instances[1].public_ip}}"
         groupname: web
 
+- name: Adding delay for system to come up
+  wait_for:
+    timeout: 300
+  delegate_to: localhost
+
 - name: build war
   hosts: build
   become: yes
