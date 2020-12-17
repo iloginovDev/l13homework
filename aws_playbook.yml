@@ -7,7 +7,7 @@
     aws_key_name: my-key
     aws_security_group: launch-wizard-1
 #    aws_key_file: /root/.ssh/my-key.pem
-    aws_image: ami-0a91cd140a1fc148a
+    aws_image: ami-0dd9f0e7df0f0a138
 
   tasks:
     - name: create key pair
