@@ -75,9 +75,22 @@
 
     - name: enshure package was built
       command: mvn package -f /home/boxfuse-sample-java-war-hello
+    
+    - name: Set AWS KEY ID
+      set_fact: aws_key_id="{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+      delegate_to: localhost
+    - name: Set AWS SECRET
+      set_fact: aws_secret_key="{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+      delegate_to: localhost
+    - name: Get AWS KEY ID
+      set_fact: aws_key_id={{hostvars[inventory_hostname]['aws_key_id']}}
+    - name: Get AWS SECRET KEY
+      set_fact: aws_secret_key={{hostvars[inventory_hostname]['aws_secret_key']}}
 
     - name: put war to S3
       amazon.aws.aws_s3:
+        aws_access_key: {{aws_key_id}}
+        aws_secret_key: {{aws_secret_key}}
         bucket: testbucket.test5.com
         object: /my/hello-1.0.war
         src: /home/boxfuse-sample-java-war-hello/target/hello-1.0.war
@@ -104,8 +117,21 @@
       pip:
         name: boto3
 
+    - name: Set AWS KEY ID
+      set_fact: aws_key_id="{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+      delegate_to: localhost
+    - name: Set AWS SECRET
+      set_fact: aws_secret_key="{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+      delegate_to: localhost
+    - name: Get AWS KEY ID
+      set_fact: aws_key_id={{hostvars[inventory_hostname]['aws_key_id']}}
+    - name: Get AWS SECRET KEY
+      set_fact: aws_secret_key={{hostvars[inventory_hostname]['aws_secret_key']}}
+
     - name: Get an object.
       amazon.aws.aws_s3:
+        aws_access_key: {{aws_key_id}}
+        aws_secret_key: {{aws_secret_key}}
         bucket: testbucket.test5.com
         object: /my/hello-1.0.war
         dest: /var/lib/tomcat8/webapps/hello-1.0.war
